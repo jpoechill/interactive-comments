@@ -123,7 +123,7 @@
               </div>
               <textarea v-model="comment.reply" placeholder="Add reply..." class="px-4 py-3 mr-3 w-full min-h-[80px] border resize-none rounded-[8px]">
               </textarea>
-              <button @click="addReply(comment)" class="text-white px-3 b-moderate-blue h-[48px] w-[104px] rounded-[8px] font-bold">REPLY</button>
+              <button @click="addReply(comment)" class="text-white px-3 b-moderate-blue h-[48px] mr-3 min-w-[104px] rounded-[8px] font-bold">REPLY</button>
             </div>
 
 
@@ -136,7 +136,7 @@
                     <img :src="store.data.currentUser.image.png"  :alt="store.data.currentUser.username + 'Avatar'" class="inline h-[40px]">
                   </div>
                 </div>
-                <button @click="addReply(comment)" class="text-white px-3 b-moderate-blue h-[48px] w-[104px] rounded-[8px] font-bold">SEND</button>
+                <button @click="addReply(comment)" class="text-white px-3 b-moderate-blue h-[48px] mr-3 min-w-[104px] rounded-[8px] font-bold">SEND</button>
               </div>
             </div>
 
@@ -154,7 +154,7 @@
                 
                 <!-- Post new reply to comment -->
                 <div class="pl-0 md:pl-5 pr-3 w-full">
-                  <div class="flex w-100 justify-between">
+                  <div class="flex w-full justify-between">
                     <div>
                       <img :src="reply.user.image.png" :alt="reply.user.username + 'Avatar'" class="inline h-[32px]">
                       <span class="dark-blue font-bold pl-4 pr-1">
@@ -192,14 +192,17 @@
                     </div>
                   </div>
                   <div v-if="store.data.currentUser.username == reply.user.username && reply.showEdit" class="mt-4 grey-blue">
-                    <textarea :value="'@' + reply.replyingTo + ' ' + reply.content" class="px-4 py-3 mr-3 w-full min-h-[100px] border resize-none rounded-[8px]"></textarea>
+                    <textarea v-model="reply.content" class="px-4 py-3 mr-3 w-full min-h-[100px] border resize-none rounded-[8px]"></textarea>
+                    <div class="block">
+                      <button @click="editComment(reply, reply.content)" class="mt-2 float-right text-white b-moderate-blue h-[48px] w-[104px] rounded-[8px] font-bold">UPDATE</button>
+                    </div>
                   </div>
                   <div v-else class="mt-4 grey-blue">
                     <span class="font-bold moderate-blue">@{{ reply.replyingTo }}</span> {{ reply.content }}
                   </div>
 
                   <!-- Mobile Options -->
-                  <div class="flex justify-between md:hidden">
+                  <div class="flex w-full justify-between md:hidden">
                     <div class="flex-none justify-between w-[100px] h-[40px] bg-v-light-gray mt-4 p-2 rounded-[10px] md:hidden">
                       <div class="flex justify-between items-center h-full h-full py-1">
                         <img @click="upVote(comment.id, reply.id)" src="/icon-plus.svg" alt="Upvote" role="button">
@@ -230,12 +233,20 @@
                         <svg width="14" height="13"  class="fill-[#5357B6] group-hover:fill-[#C5C6EF] mb-1 mr-1 inline" xmlns="http://www.w3.org/2000/svg">
                           <path d="M.227 4.316 5.04.16a.657.657 0 0 1 1.085.497v2.189c4.392.05 7.875.93 7.875 5.093 0 1.68-1.082 3.344-2.279 4.214-.373.272-.905-.07-.767-.51 1.24-3.964-.588-5.017-4.829-5.078v2.404c0 .566-.664.86-1.085.496L.227 5.31a.657.657 0 0 1 0-.993Z" />
                         </svg>
-                        <span class="text-[#5357B6] font-bold group-hover:text-[#C5C6EF]" role="button">
+                        <span @click="reply.showEdit = !reply.showEdit" class="text-[#5357B6] font-bold group-hover:text-[#C5C6EF]" role="button">
                           Edit
                         </span>
                       </div>
                     </div>
                   </div>
+                  
+                  <!-- <div v-if="store.data.currentUser.username == reply.user.username && reply.showEdit" class="mt-4 grey-blue">
+                    <textarea v-model="reply.content" class="px-4 py-3 mr-3 w-full min-h-[100px] border resize-none rounded-[8px]"></textarea>
+                    <button @click="editComment(reply, reply.content)" class="mt-2 float-right text-white b-moderate-blue h-[48px] w-[104px] rounded-[8px] font-bold">UPDATE</button>
+                  </div>
+                  <div v-else class="mt-4 grey-blue">
+                    <span class="font-bold moderate-blue">@{{ reply.replyingTo }}</span> {{ reply.content }}
+                  </div> -->
 
                 </div>
               </div>
@@ -248,18 +259,18 @@
                   </div>
                 </div>
                 <textarea v-model="comment.reply" placeholder="Add comment..." class="px-4 py-3 mr-3 w-full min-h-[80px] border resize-none rounded-[8px]"></textarea>
-                <button @click="addReply(comment, reply.user.username)" class="text-white px-3 b-moderate-blue h-[48px] w-[104px] rounded-[8px] font-bold">SEND</button>
+                <button @click="addReply(comment, reply.user.username)" class="text-white px-3 b-moderate-blue h-[48px] mr-4 min-w-[104px] rounded-[8px] font-bold">SEND</button>
               </div>
 
               <!-- Mobile View -->
-              <div v-if="reply.showReply" class="bg-white w-full pr-3 py-5 mt-5 rounded-[8px] justify-between flex md:hidden">
+              <div v-if="reply.showReply" class="bg-white w-full pr-5 py-5 mt-5 rounded-[8px] justify-between flex md:hidden">
                 <div class="px-4 min-h-full">
                   <div class="w-[40px] h-full">
                     <img :src="store.data.currentUser.image.png"  :alt="store.data.currentUser.username + 'Avatar'" class="inline h-[40px]">
                   </div>
                 </div>
                 <textarea placeholder="Add comment..." class="px-4 py-3 mr-3 w-full min-h-[80px] border resize-none rounded-[8px]"  :value="'@' + reply.user.username + ' '"></textarea>
-                <button class="text-white px-3 b-moderate-blue h-[48px] w-[104px] rounded-[8px] font-bold">SEND</button>
+                <button class="text-white px-3 mr-3 b-moderate-blue h-[48px] min-w-[104px] rounded-[8px] font-bold">SEND</button>
               </div>
 
               
@@ -293,7 +304,7 @@
             </div>
             <textarea v-model="comment.reply" placeholder="Add reply..." class="px-4 py-3 mr-3 w-full min-h-[80px] border resize-none rounded-[8px]">
             </textarea>
-            <button @click="addReply(comment)" class="text-white px-3 b-moderate-blue h-[48px] w-[104px] rounded-[8px] font-bold">REPLY</button>
+            <button @click="addReply(comment)" class="mr-3 text-white px-3 b-moderate-blue h-[48px] min-w-[104px] rounded-[8px] font-bold">REPLY</button>
           </div>
 
           <!-- <div v-if="comment.showReply" class="bg-white w-full p-3 py-5 mb-5 rounded-[8px] md:hidden">
@@ -316,7 +327,7 @@
                   <img :src="store.data.currentUser.image.png"  :alt="store.data.currentUser.username + 'Avatar'" class="inline h-[40px]">
                 </div>
               </div>
-              <button class="text-white px-3 b-moderate-blue h-[48px] w-[104px] rounded-[8px] font-bold">SEND</button>
+              <button class="text-white px-3 mr-3 b-moderate-blue h-[48px] min-w-[104px] rounded-[8px] font-bold">SEND</button>
             </div>
           </div>
         </div>
@@ -324,14 +335,14 @@
       </div>
 
       <!-- Top Level Add Comment -->
-      <div class="bg-white w-full p-3 py-5 rounded-[8px] justify-between hidden md:flex">
+      <div class="bg-white w-full p-3 py-5 pr-5 rounded-[8px] justify-between hidden md:flex">
         <div class="px-4 min-h-full">
           <div class="w-[40px] h-full">
             <img :src="store.data.currentUser.image.png"  :alt="store.data.currentUser.username + 'Avatar'" class="inline h-[40px]">
           </div>
         </div>
         <textarea placeholder="Add comment..." v-model="newComment" class="px-4 py-3 mr-3 w-full min-h-[80px] border resize-none rounded-[8px]"></textarea>
-        <button @click="addComment(newComment)" class="text-white px-3 b-moderate-blue h-[48px] w-[104px] rounded-[8px] font-bold">SEND</button>
+        <button @click="addComment(newComment)" class="mr-2 text-white px-3 b-moderate-blue h-[48px] min-w-[104px] rounded-[8px] font-bold">SEND</button>
       </div>
 
       <!-- Top Level Add Comment // Mobile Options -->
@@ -343,7 +354,7 @@
               <img :src="store.data.currentUser.image.png"  :alt="store.data.currentUser.username + 'Avatar'" class="inline h-[40px]">
             </div>
           </div>
-          <button @click="addComment(newComment)" class="text-white px-3 b-moderate-blue h-[48px] w-[104px] rounded-[8px] font-bold">SEND</button>
+          <button @click="addComment(newComment)" class="text-white px-3 mr-3 b-moderate-blue h-[48px] min-w-[104px] rounded-[8px] font-bold">SEND</button>
         </div>
       </div>
 
@@ -392,8 +403,24 @@ export default defineComponent({
     editReply (commentID, data) {
       // ...
     },
-    editComment (commentID, data) {
-      // ...
+    editComment (comment, data) {
+      for (let i = 0; i < this.store.data.comments.length; i++) {
+        if (this.store.data.comments[i].id === comment.id) {
+          comment.showEdit = false
+          this.store.data.comments[i].content = data;
+          break;
+        }
+        
+        if (this.store.data.comments[i].replies) {
+          for (let t = 0; t < this.store.data.comments[i].replies.length; t++) {
+            if (this.store.data.comments[i].replies[t].id === comment.id) {
+              comment.showEdit = false
+              this.store.data.comments[i].replies[t].content = data;
+              break;
+            }
+          }
+        }
+      }
     },
     addComment (data) {
       if (data !== '') {
