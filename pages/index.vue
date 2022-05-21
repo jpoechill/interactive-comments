@@ -33,9 +33,7 @@
         </div>
     </div>
 
-
     <div class="container mx-auto max-w-[730px] mt-[64px] mb-16 px-5 md:px-0">
-
       <!-- List Items -->
       <div v-for="(comment, index) in store.data.comments" :key="index" class="">
         <div class="bg-white p-3 rounded-[8px] mb-5">
@@ -96,7 +94,6 @@
             </div>
           </div>
         </div>
-
 
         <!-- Replies -->
         <div v-if="comment.replies.length" class="px-0 rounded-[8px] mb-5 flex justify-between">
@@ -239,14 +236,6 @@
                       </div>
                     </div>
                   </div>
-                  
-                  <!-- <div v-if="store.data.currentUser.username == reply.user.username && reply.showEdit" class="mt-4 grey-blue">
-                    <textarea v-model="reply.content" class="px-4 py-3 mr-3 w-full min-h-[100px] border resize-none rounded-[8px]"></textarea>
-                    <button @click="editComment(reply, reply.content)" class="mt-2 float-right text-white b-moderate-blue h-[48px] w-[104px] rounded-[8px] font-bold">UPDATE</button>
-                  </div>
-                  <div v-else class="mt-4 grey-blue">
-                    <span class="font-bold moderate-blue">@{{ reply.replyingTo }}</span> {{ reply.content }}
-                  </div> -->
 
                 </div>
               </div>
@@ -272,26 +261,8 @@
                 <textarea placeholder="Add comment..." class="px-4 py-3 mr-3 w-full min-h-[80px] border resize-none rounded-[8px]"  :value="'@' + reply.user.username + ' '"></textarea>
                 <button class="text-white px-3 mr-3 b-moderate-blue h-[48px] min-w-[104px] rounded-[8px] font-bold">SEND</button>
               </div>
-
-              
-            </div>
-
-            <!-- <div v-if="comment.showReply" class="bg-white w-full p-3 py-5 mb-5 rounded-[8px] md:hidden">
-              <textarea v-model="comment.reply" placeholder="Add reply..." class="px-4 py-3 mr-3 w-full min-h-[80px] border resize-none rounded-[8px]"></textarea>
-              <div class="flex justify-between mt-3">
-                <div class="min-h-full">
-                  <div class="w-[40px] h-full">
-                    <img :src="store.data.currentUser.image.png"  :alt="store.data.currentUser.username + 'Avatar'" class="inline h-[40px]">
-                  </div>
-                </div>
-                <button @click="addReply(comment)" class="text-white px-3 b-moderate-blue h-[48px] w-[104px] rounded-[8px] font-bold">REPLY</button>
-              </div>
-            </div> -->
-
-            
+            </div>            
           </div>
-
-          
         </div>
 
         <!-- Add Reply -->
@@ -306,18 +277,6 @@
             </textarea>
             <button @click="addReply(comment)" class="mr-3 text-white px-3 b-moderate-blue h-[48px] min-w-[104px] rounded-[8px] font-bold">REPLY</button>
           </div>
-
-          <!-- <div v-if="comment.showReply" class="bg-white w-full p-3 py-5 mb-5 rounded-[8px] md:hidden">
-            <textarea v-model="comment.reply" placeholder="Add reply..." class="px-4 py-3 mr-3 w-full min-h-[80px] border resize-none rounded-[8px]"></textarea>
-            <div class="flex justify-between mt-3">
-              <div class="min-h-full">
-                <div class="w-[40px] h-full">
-                  <img :src="store.data.currentUser.image.png"  :alt="store.data.currentUser.username + 'Avatar'" class="inline h-[40px]">
-                </div>
-              </div>
-              <button @click="addReply(comment)" class="text-white px-3 b-moderate-blue h-[48px] w-[104px] rounded-[8px] font-bold">REPLY</button>
-            </div>
-          </div> -->
 
           <div v-if="comment.showReply" class="bg-white w-full p-3 py-5 mb-5 rounded-[8px] md:hidden">
             <textarea placeholder="Add comment..." class="px-4 py-3 mr-3 w-full min-h-[80px] border resize-none rounded-[8px]"></textarea>
@@ -400,31 +359,12 @@ export default defineComponent({
     }
   },
   methods: {
-    editReply (commentID, data) {
-      // ...
-    },
     editComment (comment, data) {
-      for (let i = 0; i < this.store.data.comments.length; i++) {
-        if (this.store.data.comments[i].id === comment.id) {
-          comment.showEdit = false
-          this.store.data.comments[i].content = data;
-          break;
-        }
-        
-        if (this.store.data.comments[i].replies) {
-          for (let t = 0; t < this.store.data.comments[i].replies.length; t++) {
-            if (this.store.data.comments[i].replies[t].id === comment.id) {
-              comment.showEdit = false
-              this.store.data.comments[i].replies[t].content = data;
-              break;
-            }
-          }
-        }
-      }
+      this.store.editComment(comment, data)
     },
     addComment (data) {
       if (data !== '') {
-        this.store.data.comments.push({
+        this.store.addComment({
           "id": this.makeid(),
           "content": this.newComment,
           "createdAt": "Just now",
@@ -437,34 +377,25 @@ export default defineComponent({
       }
     },
     addReply (comment, replyingTo) {
-      this.store.data.comments.find((x) => x.id == comment.id).replies.push({
+      let payload = {
         "id": this.makeid(),
         "content": comment.reply,
         "createdAt": "Just now",
         "score": 0,
         "replyingTo": replyingTo ? replyingTo : comment.user.username,
         "user": this.store.data.currentUser
-      })
+      }
 
-      console.log()
+      this.store.addReply(comment.id, payload)
 
       comment.reply = ''
       this.closeAllTabs()
     },
     deleteComment () {
-      this.store.data.comments = this.store.data.comments.filter((comment) => {
-        comment.replies = comment.replies.filter((reply) => {
-          return reply.id !== this.deleteID
-        })
-
-        return comment.id !== this.deleteID
-      })
+      this.store.deleteComment(this.deleteID)
       
       this.deleteID = ''
       this.modal.toggle()
-    },
-    handleCommentReply (commentID) {
-      alert('Make reply: ' + commentID)
     },
     upVote (commentID, replyID) {
       commentID && !replyID ? this.store.data.comments.find((x) => x.id == commentID).score++ : ''
@@ -476,7 +407,6 @@ export default defineComponent({
     },
 
     closeAllTabs () {
-      console.log('ooga booga')
       this.store.data.comments = this.store.data.comments.map((comment) => {
         comment.showReply = false
         comment.replies = comment.replies.map((reply) => {
@@ -488,11 +418,6 @@ export default defineComponent({
       })
     },
     toggleModal () {
-      // let targetEl = document.getElementById('defaultModal');
-      // targetEl.toggle()
-      // let modal = new Modal(document.getElementById('defaultModal'));
-      // modal.toggle()
-      // console.log(targetEl)
       this.modal.toggle()
     },
     makeid () {

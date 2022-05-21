@@ -11,25 +11,50 @@ export const useStore = defineStore('storeId', {
     }
   },
   actions:{
-    // do stuff ...
-    editReply (commentID, data) {
-        // ...
-    },
-    editComment (commentID, data) {
-    // ...
+    editComment (comment, data) {
+      // ...
+      console.log('hello')
+
+      for (let i = 0; i < this.data.comments.length; i++) {
+        if (this.data.comments[i].id === comment.id) {
+          comment.showEdit = false
+          this.data.comments[i].content = data;
+          break;
+        }
+        
+        if (this.data.comments[i].replies) {
+          for (let t = 0; t < this.data.comments[i].replies.length; t++) {
+            if (this.data.comments[i].replies[t].id === comment.id) {
+              comment.showEdit = false
+              this.data.comments[i].replies[t].content = data;
+              break;
+            }
+          }
+        }
+      }
     },
     addComment (data) {
-    // ...
+      this.data.comments.push(payload)
     },
-    addReply (commentID, data) {
-    // ...
+    addReply (commentID, payload) {
+      this.data.comments.find((x) => x.id == commentID).replies.push(payload)
     },
     deleteReply (commentID, data) {
-    // ...
+      // ...
+      console.log('hello')
     },
-    deleteComment (commentID, data) {
-    // ...
+    deleteComment (commentID) {
+      this.data.comments = this.data.comments.filter((comment) => {
+        comment.replies = comment.replies.filter((reply) => {
+          return reply.id !== commentID
+        })
+
+        return comment.id !== commentID
+      })
     },
+    sayHello (payload) {
+      this.data.comments.push(payload)
+    }
   },
   getters:{
     getComments:(state) => state.data.comments,
