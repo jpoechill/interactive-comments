@@ -12,9 +12,6 @@ export const useStore = defineStore('storeId', {
   },
   actions:{
     editComment (comment, data) {
-      // ...
-      console.log('hello')
-
       for (let i = 0; i < this.data.comments.length; i++) {
         if (this.data.comments[i].id === comment.id) {
           comment.showEdit = false
@@ -33,7 +30,7 @@ export const useStore = defineStore('storeId', {
         }
       }
     },
-    addComment (data) {
+    addComment (payload) {
       this.data.comments.push(payload)
     },
     addReply (commentID, payload) {
